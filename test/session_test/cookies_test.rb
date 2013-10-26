@@ -141,7 +141,11 @@ module SessionTest
         session = UserSession.new(ben)
         session.remember_me = true
         assert session.save
-        assert_equal "#{ben.persistence_token}::#{ben.id}::#{session.remember_me_until}", controller.cookies["user_credentials"]
+
+        token, id, remember_me = controller.cookies["user_credentials"].split("::")
+        assert_equal "#{ben.persistence_token}", token
+        assert_equal "#{ben.id}", id
+        assert_equal Time.parse(session.remember_me_until.to_s), Time.parse(remember_me.to_s)
       end
 
       def test_after_destroy_destroy_cookie
